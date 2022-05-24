@@ -8,7 +8,7 @@ import (
 
 func main() {
 	screen.Clear()
-	
+
 	matrix := models.InitMatrix(25)
 	matrix.Seed()
 	matrix.Draw()

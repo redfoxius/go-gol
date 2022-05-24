@@ -1,6 +1,8 @@
 package models
 
-import "github.com/redfoxius/go-gol/app/service"
+import (
+	"github.com/redfoxius/go-gol/app/service"
+)
 
 type Matrix interface {
 	Seed()
@@ -15,14 +17,19 @@ type matrix struct {
 }
 
 func InitMatrix(len int) Matrix {
-	m := matrix{}
-	m.mx = make([][]int, len)
+	return &matrix{
+		mx: getEmptyMatrix(len),
+	}
+}
 
-	for i := range m.mx {
-		m.mx[i] = make([]int, len)
+func getEmptyMatrix(len int) [][]int {
+	mx := make([][]int, len)
+
+	for i := range mx {
+		mx[i] = make([]int, len)
 	}
 
-	return &m
+	return mx
 }
 
 func (m *matrix) Seed() {
@@ -42,20 +49,22 @@ func (m *matrix) Draw() {
 func (m *matrix) NextRound() {
 	len := len(m.mx)
 
+	buf := getEmptyMatrix(len)
+
 	for i := 0; i < len; i++ {
 		for j := 0; j < len; j++ {
 			neighborsAlive := m.Check(i, j)
 
 			switch {
-			case m.mx[i][j] == 1 && neighborsAlive < 2:
-				m.mx[i][j] = 0
-			case m.mx[i][j] == 1 && neighborsAlive > 3:
-				m.mx[i][j] = 0
+			case m.mx[i][j] == 1 && (neighborsAlive >= 2 && neighborsAlive <= 3):
+				buf[i][j] = 1
 			case m.mx[i][j] == 0 && neighborsAlive == 3:
-				m.mx[i][j] = 1
+				buf[i][j] = 1
 			}
 		}
 	}
+
+	m.mx = buf
 
 	m.Draw()
 }
@@ -70,6 +79,9 @@ func (m *matrix) Check(x, y int) int {
 		}
 		for j := y - 1; j <= y+1; j++ {
 			if j < 0 || j >= len {
+				continue
+			}
+			if i == x && j == y {
 				continue
 			}
 

@@ -1,6 +1,8 @@
 package service
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func DrawMatrix(input [][]int) {
 	for _, row := range input {
@@ -14,7 +16,7 @@ func generateRow(row []int) string {
 	res := `|`
 
 	for _, v := range row {
-		if v == 1 {
+		if v > 0 {
 			res += `#|`
 		} else {
 			res += ` |`
